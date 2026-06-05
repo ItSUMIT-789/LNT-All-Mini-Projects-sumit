@@ -1,0 +1,11 @@
+************* Module app
+app.py:18:0: C0304: Final newline missing (missing-final-newline)
+app.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+app.py:6:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:10:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:14:0: C0116: Missing function or method docstring (missing-function-docstring)
+app.py:14:0: C0103: Function name "userDetails" doesn't conform to snake_case naming style (invalid-name)
+
+-----------------------------------
+Your code has been rated at 4.00/10
+

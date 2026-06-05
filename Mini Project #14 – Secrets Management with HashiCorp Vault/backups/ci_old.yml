@@ -1,0 +1,103 @@
+name: Flask CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  python-setup:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify Python
+        run: |
+          python --version
+
+  run-tests:
+
+    runs-on: ubuntu-latest
+
+    needs: python-setup
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Create Reports Directory
+        run: |
+          mkdir -p reports
+
+      - name: Execute Tests
+        run: |
+          pytest test_app.py \
+          --html=reports/pytest-report.html \
+          --self-contained-html
+
+      - name: Upload Test Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report
+          path: reports/
+
+      - name: Run Pylint
+        run: |
+          pylint app.py --output-format=text | tee reports/pylint-report.txt
+
+      - name: Upload Pylint Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pylint-report
+          path: reports/pylint-report.txt
+
+  docker-build-push:
+
+    runs-on: ubuntu-latest
+
+    needs: run-tests
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+          -t ${{ secrets.DOCKER_USERNAME }}/flask-ci-demo:${{ github.sha }} .
+
+      - name: Push Docker Image
+        run: |
+          docker push \
+          ${{ secrets.DOCKER_USERNAME }}/flask-ci-demo:${{ github.sha }}

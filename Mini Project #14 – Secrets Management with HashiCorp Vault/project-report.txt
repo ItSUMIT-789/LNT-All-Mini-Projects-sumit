@@ -1,0 +1,10 @@
+Mini Project #14
+Status: Completed
+Completion: 100%
+
+Evidence:
+* Vault running: Achieved locally using Docker Compose, creating an isolated development Vault server.
+* Secrets stored: `vault-init.sh` automatically creates `db_password` and `api_key` under `secret/devops` upon container startup.
+* Secrets retrieved: Flask application (`app.py`) utilizes the `hvac` Python module to authenticate to Vault and fetch the credentials on startup.
+* GitHub Secrets integrated: `.github/workflows/ci.yml` demonstrates CI retrieval of Vault secrets and masks them to avoid exposure.
+* No hardcoded credentials: All secrets have been abstracted into Vault, with only access tokens and Vault endpoints provided via environment variables (`.env.example`).
